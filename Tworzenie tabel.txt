@@ -1,0 +1,112 @@
+
+CREATE TABLE Operatorzy(
+Operator_ID VARCHAR2(4) CONSTRAINT operator_pk PRIMARY KEY,
+Imie VARCHAR2(32),
+Nazwisko VARCHAR2(32),
+PESEL VARCHAR2(17),
+Pensja NUMBER
+);
+
+CREATE TABLE Wezwania(
+Wezwanie_ID VARCHAR2(4) CONSTRAINT wezwanie_pk PRIMARY KEY,
+Operator_ID VARCHAR2(4) NOT NULL CONSTRAINT op_unique UNIQUE,
+Numer_wzywającego VARCHAR2(16),
+Powod VARCHAR2(32),
+Miasto_wezwania VARCHAR2(16),
+Liczbarannych NUMBER,
+CONSTRAINT wezw_oper_fk FOREIGN KEY (Operator_ID) REFERENCES Operatorzy(Operator_ID)
+);
+
+CREATE TABLE Pacjenci(
+Pacjent_ID VARCHAR2(4) CONSTRAINT pacjenci_pk PRIMARY KEY,
+Imie VARCHAR2(32),
+Nazwisko VARCHAR2(32),
+PESEL VARCHAR2(17),
+Uraz VARCHAR2(64),
+Grupa_krwi VARCHAR2(3)
+);
+
+CREATE TABLE Akcje(
+Akcja_ID VARCHAR2(4) CONSTRAINT akcje_pk PRIMARY KEY,
+Pacjent_ID VARCHAR2(4) NOT NULL CONSTRAINT pac_unique UNIQUE,
+Wezwanie_ID VARCHAR2(4) NOT NULL CONSTRAINT wez_unique UNIQUE,
+Pojazd_ID VARCHAR2(4) NOT NULL CONSTRAINT pojazd_unique UNIQUE,
+CONSTRAINT akc_pacj_fk FOREIGN KEY (Pacjent_ID) REFERENCES Pacjenci(Pacjent_ID),
+CONSTRAINT akc_wezw_fk FOREIGN KEY (Wezwanie_ID) REFERENCES Wezwania(Wezwanie_ID)
+);
+
+CREATE TABLE Wyposazenie(
+Wyposazenie_ID VARCHAR2(4) CONSTRAINT wypo_pk PRIMARY KEY,
+Zastosowanie VARCHAR2(32),
+Nazwa VARCHAR2(32)
+);
+
+CREATE TABLE Uszkodzenia(
+Uszkodzenie_ID VARCHAR2(4) CONSTRAINT uszk_pk PRIMARY KEY,
+Sprawca_uszkodzenia VARCHAR2(32),
+Rodzaj_uszkodzenia VARCHAR2(32),
+Koszt NUMBER
+);
+
+CREATE TABLE Kierowcy(
+Kierowca_ID VARCHAR2(4) CONSTRAINT kier_pk PRIMARY KEY,
+Imie VARCHAR2(32),
+Nazwisko VARCHAR2(32),
+PESEL VARCHAR2(17)
+);
+
+CREATE TABLE Ratownicy(
+Ratownik_ID VARCHAR2(4) CONSTRAINT rat_pk PRIMARY KEY,
+Imie VARCHAR2(32),
+Nazwisko VARCHAR2(32),
+PESEL VARCHAR2(17),
+Pensja NUMBER
+);
+
+CREATE TABLE Karetki(
+Numer_VIN VARCHAR2(17) CONSTRAINT kar_pk PRIMARY KEY,
+Numer_rejestracyjny VARCHAR2(8) NOT NULL CONSTRAINT kar_unique UNIQUE,
+Zasieg NUMBER
+);
+
+CREATE TABLE Helikoptery(
+Helikopter_ID VARCHAR2(4) CONSTRAINT hel_pk PRIMARY KEY,
+Numer_rejestracyjny VARCHAR2(8) NOT NULL CONSTRAINT hel_unique UNIQUE,
+Zasieg NUMBER
+);
+
+CREATE TABLE Pojazdy(
+Pojazd_ID VARCHAR2(4) CONSTRAINT poj_pk PRIMARY KEY,
+Wyposazenie_ID VARCHAR2(4) NOT NULL CONSTRAINT wyp_unique UNIQUE,
+Uszkodzenie_ID VARCHAR2(4) NOT NULL CONSTRAINT uszk_unique UNIQUE,
+Kierowca_ID VARCHAR2(4) NOT NULL CONSTRAINT kier_unique UNIQUE,
+Ratownik_ID VARCHAR2(4) NOT NULL CONSTRAINT rat_unique UNIQUE,
+Numer_VIN VARCHAR2(17) CONSTRAINT vin_unique UNIQUE,
+Numer_rejestracyjny VARCHAR2(8) CONSTRAINT rej_unique UNIQUE,
+CONSTRAINT poj_akc_fk FOREIGN KEY (Pojazd_ID) REFERENCES Akcje(Pojazd_ID),
+CONSTRAINT poj_wyp_fk FOREIGN KEY (Wyposazenie_ID) REFERENCES Wyposazenie(Wyposazenie_ID),
+CONSTRAINT poj_uszk_fk FOREIGN KEY (Uszkodzenie_ID) REFERENCES Uszkodzenia(Uszkodzenie_ID),
+CONSTRAINT poj_kier_fk FOREIGN KEY (Kierowca_ID) REFERENCES Kierowcy(Kierowca_ID),
+CONSTRAINT poj_rat_fk FOREIGN KEY (Ratownik_ID) REFERENCES Ratownicy(Ratownik_ID),
+CONSTRAINT poj_kar_fk FOREIGN KEY (Numer_VIN) REFERENCES Karetki(Numer_Vin),
+CONSTRAINT poj_hel_fk FOREIGN KEY (Numer_rejestracyjny) REFERENCES Helikoptery(Numer_rejestracyjny)
+);
+
+CREATE TABLE Garaze(
+Garaz_ID VARCHAR2(4) CONSTRAINT gar_pk PRIMARY KEY,
+Liczba_miejsc NUMBER,
+Numer_VIN VARCHAR2(17) NOT NULL CONSTRAINT vin_unique2 UNIQUE,
+Helikopter_ID VARCHAR2(4) NOT NULL CONSTRAINT hel_unique2 UNIQUE,
+CONSTRAINT gar_kar_fk FOREIGN KEY (Numer_VIN) REFERENCES Karetki(Numer_VIN),
+CONSTRAINT gar_hel_fk FOREIGN KEY (Helikopter_ID) REFERENCES Helikoptery(Helikopter_ID)
+);
+
+CREATE TABLE Szpitale (
+Szpital_ID VARCHAR2(4) CONSTRAINT szp_pk PRIMARY KEY,
+Garaz_ID VARCHAR2(4) NOT NULL CONSTRAINT szp_unique UNIQUE,
+Nazwa VARCHAR2(32),
+Adres VARCHAR2(32),
+Numer_telefonu VARCHAR2(11),
+Zarzadca VARCHAR2(32),
+CONSTRAINT szp_gar_fk FOREIGN KEY (Garaz_ID) REFERENCES Garaze(Garaz_ID) 
+);
